@@ -1,6 +1,6 @@
 import { Globe, Linkedin, Twitter, ShieldCheck, HeartPulse, Clock, Phone, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
-import logoFooter from "@/assets/MKT logo footer.png";
+import logoFooter from "@/assets/MKT logo Footer.png";
 
 interface FooterProps {
   lang: "EN" | "AR";

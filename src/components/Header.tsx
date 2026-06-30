@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Globe, Menu, X, ArrowRight, Lock, User, Check } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import logoNavbar from "@/assets/MKT logo navbar.png";
+import logoNavbar from "@/assets/MKT logo header.png";
 
 interface HeaderProps {
   currentSection: string;
