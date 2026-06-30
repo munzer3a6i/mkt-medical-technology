@@ -41,7 +41,7 @@ export default function Header({
           className="flex items-center gap-2 hover:opacity-90 transition-opacity cursor-pointer text-start"
           id="nav-logo-btn"
         >
-          <img src={logoNavbar} alt="MKT Solutions" className="h-16 w-auto object-contain" />
+          <img src={logoNavbar} alt="MKT Solutions" className="h-16 w-auto object-contain scale-[3] origin-left" />
         </button>
 
         {/* Desktop Navigation */}
