@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../data/mkt.db"
+}
+
+model AdminUser {
+  id           String @id @default(uuid())
+  username     String @unique
+  passwordHash String
+}
+
+model Service {
+  id                String   @id @default(uuid())
+  title             String
+  titleAr           String?
+  description       String
+  descriptionAr     String?
+  longDescription   String?
+  longDescriptionAr String?
+  iconName          String   @default("Activity")
+  badgeLabel        String?
+  badgeLabelAr      String?
+  sortOrder         Int      @default(0)
+  keyProjects       String   @default("[]") // JSON array
+  keyProjectsAr     String   @default("[]") // JSON array
+  certifications    String   @default("[]") // JSON array
+  createdAt         DateTime @default(now())
+  complianceRows    ComplianceRow[]
+}
+
+model ComplianceRow {
+  id              String  @id @default(uuid())
+  serviceId       String
+  service         Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  division        String
+  divisionAr      String?
+  standard        String
+  recertInterval  String?
+  recertIntervalAr String?
+  sfdaStatus      String  @default("ACTIVE")
+}
+
+model EquipmentCategory {
+  id        String      @id @default(uuid())
+  name      String
+  nameAr    String?
+  equipment Equipment[]
+}
+
+model Equipment {
+  id                String             @id @default(uuid())
+  name              String
+  nameAr            String?
+  categoryId        String?
+  category          EquipmentCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  sku               String?
+  description       String?
+  descriptionAr     String?
+  longDescription   String?
+  longDescriptionAr String?
+  image             String?
+  specifications    String  @default("[]") // JSON array
+  specificationsAr  String  @default("[]") // JSON array
+  createdAt         DateTime @default(now())
+}
+
+model PartnerCategory {
+  id       String    @id @default(uuid())
+  name     String
+  nameAr   String?
+  partners Partner[]
+}
+
+model Partner {
+  id         String           @id @default(uuid())
+  name       String
+  nameAr     String?
+  categoryId String?
+  category   PartnerCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  iconName   String?
+  logo       String?
+  createdAt  DateTime @default(now())
+}

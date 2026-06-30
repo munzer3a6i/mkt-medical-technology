@@ -1,0 +1,6 @@
+{
+  "name": "MKT Medical Technology",
+  "description": "Precision infrastructure and ISO-certified technology solutions for clinical and security institutions in Saudi Arabia.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

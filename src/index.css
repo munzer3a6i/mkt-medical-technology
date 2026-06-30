@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "IBM Plex Sans Arabic", sans-serif;
+  --font-mono: "Inter", "IBM Plex Sans Arabic", sans-serif;
+}
