@@ -39,7 +39,7 @@ export default function Footer({ lang, onSectionClick }: FooterProps) {
           {/* Col 1: Brand details */}
           <div className="flex flex-col gap-6 text-start">
             <div className="flex items-center gap-2">
-              <img src={logoFooter} alt="MKT Solutions" className="h-16 w-auto object-contain scale-[3] origin-left" />
+              <img src={logoFooter} alt="MKT Solutions" className="h-16 w-auto object-contain scale-[3] ltr:origin-left rtl:origin-right" />
             </div>
             
             <p className="font-sans text-xs sm:text-sm text-[#A7C8FF] leading-relaxed max-w-xs">
