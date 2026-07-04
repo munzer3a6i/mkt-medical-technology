@@ -249,6 +249,12 @@ export default function App() {
                 onOpenAssessment={handleOpenAssessmentRequest}
               />
 
+              {/* Corporate Profile (About/Mission/Vision) */}
+              <AboutStory 
+                lang={lang} 
+                onExploreDetailed={() => handleSectionScroll("about")}
+              />
+
               {/* Strategic Performance Grid */}
               <TrustGrid lang={lang} />
 
@@ -264,12 +270,6 @@ export default function App() {
                 lang={lang}
                 onInquireProduct={handleInquireProduct}
                 onExploreCatalog={() => handleSectionScroll("equipment")}
-              />
-
-              {/* Corporate Profile (About/Mission/Vision) */}
-              <AboutStory 
-                lang={lang} 
-                onExploreDetailed={() => handleSectionScroll("about")}
               />
 
               {/* Work Process Pipeline */}
