@@ -9,7 +9,7 @@
     "dev:full": "concurrently \"npm run dev\" \"npm run server\"",
     "db:migrate": "cd server && npx prisma migrate dev --name init",
     "db:seed": "tsx server/prisma/seed.ts",
-    "build": "vite build",
+    "build": "prisma generate && prisma db push --accept-data-loss && npm run db:seed && vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"
