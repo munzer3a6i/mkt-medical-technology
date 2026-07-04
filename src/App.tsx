@@ -24,7 +24,7 @@ import BackToTop from "./components/BackToTop";
 import { Product } from "./types";
 
 export default function App() {
-  const [lang, setLang] = useState<"EN" | "AR">("EN");
+  const [lang, setLang] = useState<"EN" | "AR">("AR");
   const [page, setPage] = useState<"home" | "services" | "equipment" | "process" | "about" | "partners" | "contact">("home");
   const [currentSection, setCurrentSection] = useState("home");
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
