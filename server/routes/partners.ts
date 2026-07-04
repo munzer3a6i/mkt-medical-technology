@@ -1,14 +1,8 @@
 import { Router } from "express";
-import multer from "multer";
-import path from "path";
 import prisma from "../prisma/client.js";
 import { requireAuth } from "../middleware/auth.js";
-import { put } from "@vercel/blob";
 
 const router = Router();
-
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
 
 // --- Partners ---
 
@@ -24,7 +18,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", requireAuth, upload.single("logo"), async (req, res) => {
+router.post("/", requireAuth, async (req, res) => {
   try {
     const data = req.body;
     
@@ -33,22 +27,9 @@ router.post("/", requireAuth, upload.single("logo"), async (req, res) => {
     delete data.updatedAt;
     delete data.category;
     if (data.categoryId === "") data.categoryId = null;
-
-    let logoUrl = data.logo;
-    if (req.file) {
-      try {
-        const blob = await put(`partners/${req.file.originalname}`, req.file.buffer, { access: "public" });
-        logoUrl = blob.url;
-      } catch (err) {
-        console.error("Blob error:", err);
-      }
-    }
     
     const partner = await prisma.partner.create({
-      data: {
-        ...data,
-        logo: logoUrl
-      },
+      data,
       include: { category: true }
     });
     
@@ -59,7 +40,7 @@ router.post("/", requireAuth, upload.single("logo"), async (req, res) => {
   }
 });
 
-router.put("/:id", requireAuth, upload.single("logo"), async (req, res) => {
+router.put("/:id", requireAuth, async (req, res) => {
   try {
     const data = req.body;
     
@@ -68,23 +49,10 @@ router.put("/:id", requireAuth, upload.single("logo"), async (req, res) => {
     delete data.updatedAt;
     delete data.category;
     if (data.categoryId === "") data.categoryId = null;
-
-    let logoUrl = data.logo;
-    if (req.file) {
-      try {
-        const blob = await put(`partners/${req.file.originalname}`, req.file.buffer, { access: "public" });
-        logoUrl = blob.url;
-      } catch (err) {
-        console.error("Blob error:", err);
-      }
-    }
     
     const partner = await prisma.partner.update({
       where: { id: req.params.id },
-      data: {
-        ...data,
-        ...(logoUrl !== undefined && { logo: logoUrl })
-      },
+      data,
       include: { category: true }
     });
     

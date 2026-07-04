@@ -1,15 +1,8 @@
 import { Router } from "express";
-import multer from "multer";
-import path from "path";
 import prisma from "../prisma/client.js";
 import { requireAuth } from "../middleware/auth.js";
-import { put } from "@vercel/blob";
 
 const router = Router();
-
-// Multer setup for memory storage (for Vercel Blob)
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
 
 // --- Equipment ---
 
@@ -32,7 +25,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", requireAuth, upload.single("image"), async (req, res) => {
+router.post("/", requireAuth, async (req, res) => {
   try {
     const { specifications, specificationsAr, ...data } = req.body;
     
@@ -42,22 +35,11 @@ router.post("/", requireAuth, upload.single("image"), async (req, res) => {
     delete data.category;
     if (data.categoryId === "") data.categoryId = null;
 
-    let imageUrl = data.image; // Might be passed as a string url
-    if (req.file) {
-      try {
-        const blob = await put(`equipment/${req.file.originalname}`, req.file.buffer, { access: "public" });
-        imageUrl = blob.url;
-      } catch (err) {
-        console.error("Blob error:", err);
-      }
-    }
-    
     const item = await prisma.equipment.create({
       data: {
         ...data,
-        image: imageUrl,
-        specifications: specifications || "[]",
-        specificationsAr: specificationsAr || "[]",
+        specifications: JSON.stringify(specifications || []),
+        specificationsAr: JSON.stringify(specificationsAr || []),
       },
       include: { category: true }
     });
@@ -73,7 +55,7 @@ router.post("/", requireAuth, upload.single("image"), async (req, res) => {
   }
 });
 
-router.put("/:id", requireAuth, upload.single("image"), async (req, res) => {
+router.put("/:id", requireAuth, async (req, res) => {
   try {
     const { specifications, specificationsAr, ...data } = req.body;
     
@@ -83,23 +65,12 @@ router.put("/:id", requireAuth, upload.single("image"), async (req, res) => {
     delete data.category;
     if (data.categoryId === "") data.categoryId = null;
 
-    let imageUrl = data.image;
-    if (req.file) {
-      try {
-        const blob = await put(`equipment/${req.file.originalname}`, req.file.buffer, { access: "public" });
-        imageUrl = blob.url;
-      } catch (err) {
-        console.error("Blob error:", err);
-      }
-    }
-    
     const item = await prisma.equipment.update({
       where: { id: req.params.id },
       data: {
         ...data,
-        ...(imageUrl !== undefined && { image: imageUrl }),
-        specifications: specifications || "[]",
-        specificationsAr: specificationsAr || "[]",
+        specifications: JSON.stringify(specifications || []),
+        specificationsAr: JSON.stringify(specificationsAr || []),
       },
       include: { category: true }
     });

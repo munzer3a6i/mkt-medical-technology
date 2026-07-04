@@ -52,23 +52,32 @@ export default function PartnerForm({ partner, onClose }: PartnerFormProps) {
       const method = partner ? "PUT" : "POST";
       const url = partner ? `/api/partners/${partner.id}` : "/api/partners";
 
-      const data = new FormData();
-      Object.keys(formData).forEach(key => {
-        if (key !== 'category' && formData[key as keyof Partner] !== null && formData[key as keyof Partner] !== undefined) {
-          data.append(key, formData[key as keyof Partner] as string);
-        }
-      });
-
+      // Upload logo first if a new file was selected
+      let logoUrl = formData.logo;
       if (imageFile) {
-        data.append("logo", imageFile);
+        const uploadRes = await fetch(`/api/upload?filename=partners/${Date.now()}-${imageFile.name}`, {
+          method: "POST",
+          body: imageFile,
+        });
+        if (uploadRes.ok) {
+          const blob = await uploadRes.json();
+          logoUrl = blob.url;
+        }
       }
+
+      const payload = {
+        ...formData,
+        logo: logoUrl,
+      };
+      delete (payload as any).category;
 
       const res = await fetch(url, {
         method,
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: data,
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) throw new Error("Failed to save partner");

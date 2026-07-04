@@ -75,25 +75,34 @@ export default function EquipmentForm({ equipment, onClose }: EquipmentFormProps
       const method = equipment ? "PUT" : "POST";
       const url = equipment ? `/api/equipment/${equipment.id}` : "/api/equipment";
 
-      const data = new FormData();
-      Object.keys(formData).forEach(key => {
-        if (key === 'specifications' || key === 'specificationsAr') {
-          data.append(key, JSON.stringify(formData[key as keyof Equipment]));
-        } else if (key !== 'category' && formData[key as keyof Equipment] !== null && formData[key as keyof Equipment] !== undefined) {
-          data.append(key, formData[key as keyof Equipment] as string);
-        }
-      });
-
+      // Upload image first if a new file was selected
+      let imageUrl = formData.image;
       if (imageFile) {
-        data.append("image", imageFile);
+        const uploadRes = await fetch(`/api/upload?filename=equipment/${Date.now()}-${imageFile.name}`, {
+          method: "POST",
+          body: imageFile,
+        });
+        if (uploadRes.ok) {
+          const blob = await uploadRes.json();
+          imageUrl = blob.url;
+        }
       }
+
+      const payload = {
+        ...formData,
+        image: imageUrl,
+        specifications: formData.specifications,
+        specificationsAr: formData.specificationsAr,
+      };
+      delete (payload as any).category;
 
       const res = await fetch(url, {
         method,
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: data,
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) throw new Error("Failed to save equipment");
