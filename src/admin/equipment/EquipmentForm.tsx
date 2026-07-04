@@ -85,6 +85,12 @@ export default function EquipmentForm({ equipment, onClose }: EquipmentFormProps
         if (uploadRes.ok) {
           const blob = await uploadRes.json();
           imageUrl = blob.url;
+        } else {
+          const errData = await uploadRes.text();
+          console.error("Upload failed:", uploadRes.status, errData);
+          setToast({ message: `Image upload failed: ${uploadRes.status}`, type: "error" });
+          setLoading(false);
+          return;
         }
       }
 

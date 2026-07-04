@@ -62,6 +62,12 @@ export default function PartnerForm({ partner, onClose }: PartnerFormProps) {
         if (uploadRes.ok) {
           const blob = await uploadRes.json();
           logoUrl = blob.url;
+        } else {
+          const errData = await uploadRes.text();
+          console.error("Upload failed:", uploadRes.status, errData);
+          setToast({ message: `Logo upload failed: ${uploadRes.status}`, type: "error" });
+          setLoading(false);
+          return;
         }
       }
 

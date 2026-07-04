@@ -1,11 +1,6 @@
 import { put } from '@vercel/blob';
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export const config = {
-  api: { bodyParser: false },
-};
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -16,16 +11,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const chunks: Buffer[] = [];
-    for await (const chunk of req) {
-      chunks.push(chunk as Buffer);
-    }
-    const buffer = Buffer.concat(chunks);
+    // Vercel pre-parses the body — for binary uploads req.body is a Buffer
+    let body = req.body;
 
-    const blob = await put(filename, buffer, { access: 'public' });
+    // If body is a string (base64-encoded by Vercel), convert to Buffer
+    if (typeof body === 'string') {
+      body = Buffer.from(body, 'base64');
+    }
+
+    if (!body || (Buffer.isBuffer(body) && body.length === 0)) {
+      return res.status(400).json({ error: 'Empty file body' });
+    }
+
+    const blob = await put(filename, body, { access: 'public' });
     return res.status(200).json(blob);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Upload error:', error);
-    return res.status(500).json({ error: 'Upload failed' });
+    return res.status(500).json({ error: 'Upload failed', message: error.message });
   }
 }
