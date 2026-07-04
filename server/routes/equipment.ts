@@ -3,17 +3,12 @@ import multer from "multer";
 import path from "path";
 import prisma from "../prisma/client.js";
 import { requireAuth } from "../middleware/auth.js";
+import { put } from "@vercel/blob";
 
 const router = Router();
 
-// Multer setup for image uploads
-const storage = multer.diskStorage({
-  destination: "server/uploads/",
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, "eq-" + uniqueSuffix + path.extname(file.originalname));
-  },
-});
+// Multer setup for memory storage (for Vercel Blob)
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // --- Equipment ---
@@ -43,7 +38,8 @@ router.post("/", requireAuth, upload.single("image"), async (req, res) => {
     
     let imageUrl = data.image; // Might be passed as a string url
     if (req.file) {
-      imageUrl = `/uploads/${req.file.filename}`;
+      const blob = await put(`equipment/${req.file.originalname}`, req.file.buffer, { access: "public" });
+      imageUrl = blob.url;
     }
     
     const item = await prisma.equipment.create({
@@ -73,7 +69,8 @@ router.put("/:id", requireAuth, upload.single("image"), async (req, res) => {
     
     let imageUrl = data.image;
     if (req.file) {
-      imageUrl = `/uploads/${req.file.filename}`;
+      const blob = await put(`equipment/${req.file.originalname}`, req.file.buffer, { access: "public" });
+      imageUrl = blob.url;
     }
     
     const item = await prisma.equipment.update({

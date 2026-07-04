@@ -3,16 +3,11 @@ import multer from "multer";
 import path from "path";
 import prisma from "../prisma/client.js";
 import { requireAuth } from "../middleware/auth.js";
+import { put } from "@vercel/blob";
 
 const router = Router();
 
-const storage = multer.diskStorage({
-  destination: "server/uploads/",
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, "partner-" + uniqueSuffix + path.extname(file.originalname));
-  },
-});
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // --- Partners ---
@@ -34,7 +29,8 @@ router.post("/", requireAuth, upload.single("logo"), async (req, res) => {
     const data = req.body;
     let logoUrl = data.logo;
     if (req.file) {
-      logoUrl = `/uploads/${req.file.filename}`;
+      const blob = await put(`partners/${req.file.originalname}`, req.file.buffer, { access: "public" });
+      logoUrl = blob.url;
     }
     
     const partner = await prisma.partner.create({
@@ -56,7 +52,8 @@ router.put("/:id", requireAuth, upload.single("logo"), async (req, res) => {
     const data = req.body;
     let logoUrl = data.logo;
     if (req.file) {
-      logoUrl = `/uploads/${req.file.filename}`;
+      const blob = await put(`partners/${req.file.originalname}`, req.file.buffer, { access: "public" });
+      logoUrl = blob.url;
     }
     
     const partner = await prisma.partner.update({
