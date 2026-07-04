@@ -55,9 +55,19 @@ export default function PartnerForm({ partner, onClose }: PartnerFormProps) {
       // Upload logo first if a new file was selected
       let logoUrl = formData.logo;
       if (imageFile) {
-        const uploadRes = await fetch(`/api/upload?filename=partners/${Date.now()}-${imageFile.name}`, {
+        const base64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(imageFile);
+        });
+
+        const uploadRes = await fetch("/api/upload", {
           method: "POST",
-          body: imageFile,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filename: `partners/${Date.now()}-${imageFile.name}`,
+            data: base64,
+          }),
         });
         if (uploadRes.ok) {
           const blob = await uploadRes.json();
