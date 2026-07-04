@@ -25,6 +25,10 @@ app.use("/api/services", servicesRoutes);
 app.use("/api/equipment", equipmentRoutes);
 app.use("/api/partners", partnersRoutes);
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+}
+
+export default app;
