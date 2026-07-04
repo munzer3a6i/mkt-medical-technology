@@ -27,10 +27,21 @@ router.get("/", async (req, res) => {
 router.post("/", requireAuth, upload.single("logo"), async (req, res) => {
   try {
     const data = req.body;
+    
+    delete data.id;
+    delete data.createdAt;
+    delete data.updatedAt;
+    delete data.category;
+    if (data.categoryId === "") data.categoryId = null;
+
     let logoUrl = data.logo;
     if (req.file) {
-      const blob = await put(`partners/${req.file.originalname}`, req.file.buffer, { access: "public" });
-      logoUrl = blob.url;
+      try {
+        const blob = await put(`partners/${req.file.originalname}`, req.file.buffer, { access: "public" });
+        logoUrl = blob.url;
+      } catch (err) {
+        console.error("Blob error:", err);
+      }
     }
     
     const partner = await prisma.partner.create({
@@ -43,6 +54,7 @@ router.post("/", requireAuth, upload.single("logo"), async (req, res) => {
     
     res.status(201).json(partner);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -50,10 +62,21 @@ router.post("/", requireAuth, upload.single("logo"), async (req, res) => {
 router.put("/:id", requireAuth, upload.single("logo"), async (req, res) => {
   try {
     const data = req.body;
+    
+    delete data.id;
+    delete data.createdAt;
+    delete data.updatedAt;
+    delete data.category;
+    if (data.categoryId === "") data.categoryId = null;
+
     let logoUrl = data.logo;
     if (req.file) {
-      const blob = await put(`partners/${req.file.originalname}`, req.file.buffer, { access: "public" });
-      logoUrl = blob.url;
+      try {
+        const blob = await put(`partners/${req.file.originalname}`, req.file.buffer, { access: "public" });
+        logoUrl = blob.url;
+      } catch (err) {
+        console.error("Blob error:", err);
+      }
     }
     
     const partner = await prisma.partner.update({
@@ -67,6 +90,7 @@ router.put("/:id", requireAuth, upload.single("logo"), async (req, res) => {
     
     res.json(partner);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 });

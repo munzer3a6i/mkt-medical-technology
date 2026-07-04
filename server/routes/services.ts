@@ -32,6 +32,10 @@ router.post("/", requireAuth, async (req, res) => {
   try {
     const { keyProjects, keyProjectsAr, certifications, complianceRows, ...data } = req.body;
     
+    delete data.id;
+    delete data.createdAt;
+    delete data.updatedAt;
+    
     const service = await prisma.service.create({
       data: {
         ...data,
@@ -51,6 +55,10 @@ router.post("/", requireAuth, async (req, res) => {
 router.put("/:id", requireAuth, async (req, res) => {
   try {
     const { keyProjects, keyProjectsAr, certifications, complianceRows, ...data } = req.body;
+    
+    delete data.id;
+    delete data.createdAt;
+    delete data.updatedAt;
     
     const service = await prisma.service.update({
       where: { id: req.params.id },

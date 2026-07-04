@@ -36,10 +36,20 @@ router.post("/", requireAuth, upload.single("image"), async (req, res) => {
   try {
     const { specifications, specificationsAr, ...data } = req.body;
     
+    delete data.id;
+    delete data.createdAt;
+    delete data.updatedAt;
+    delete data.category;
+    if (data.categoryId === "") data.categoryId = null;
+
     let imageUrl = data.image; // Might be passed as a string url
     if (req.file) {
-      const blob = await put(`equipment/${req.file.originalname}`, req.file.buffer, { access: "public" });
-      imageUrl = blob.url;
+      try {
+        const blob = await put(`equipment/${req.file.originalname}`, req.file.buffer, { access: "public" });
+        imageUrl = blob.url;
+      } catch (err) {
+        console.error("Blob error:", err);
+      }
     }
     
     const item = await prisma.equipment.create({
@@ -67,10 +77,20 @@ router.put("/:id", requireAuth, upload.single("image"), async (req, res) => {
   try {
     const { specifications, specificationsAr, ...data } = req.body;
     
+    delete data.id;
+    delete data.createdAt;
+    delete data.updatedAt;
+    delete data.category;
+    if (data.categoryId === "") data.categoryId = null;
+
     let imageUrl = data.image;
     if (req.file) {
-      const blob = await put(`equipment/${req.file.originalname}`, req.file.buffer, { access: "public" });
-      imageUrl = blob.url;
+      try {
+        const blob = await put(`equipment/${req.file.originalname}`, req.file.buffer, { access: "public" });
+        imageUrl = blob.url;
+      } catch (err) {
+        console.error("Blob error:", err);
+      }
     }
     
     const item = await prisma.equipment.update({
@@ -90,6 +110,7 @@ router.put("/:id", requireAuth, upload.single("image"), async (req, res) => {
       specificationsAr: JSON.parse(item.specificationsAr),
     });
   } catch (error) {
+    console.error("PUT equipment error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
