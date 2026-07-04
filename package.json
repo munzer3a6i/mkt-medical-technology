@@ -9,10 +9,13 @@
     "dev:full": "concurrently \"npm run dev\" \"npm run server\"",
     "db:migrate": "cd server && npx prisma migrate dev --name init",
     "db:seed": "tsx server/prisma/seed.ts",
-    "build": "prisma generate && prisma db push && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "postinstall": "prisma generate",
+    "start": "tsx server/index.ts",
+    "build:godaddy": "npm run build && powershell -Command \"Compress-Archive -Path dist, server, package.json, package-lock.json -DestinationPath godaddy-app.zip -Force\""
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
